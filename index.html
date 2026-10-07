@@ -1432,6 +1432,11 @@ function renderUsuarioForm(el, usuarioLogin){
     const data = await api("/api/me");
     await entrarConUsuario(data.user);
   }catch(e){
+    // Aviso si el acceso directo desde IV OS no funcionó (/api/ivos-sso regresa con ?error=)
+    const err = new URLSearchParams(location.search).get("error");
+    if(err === "ivos-cuenta") state.error = "Tu cuenta no está dada de alta o está inactiva en IAFI. Solicita acceso al Admin. Líder.";
+    else if(err === "ivos") state.error = "No se pudo entrar desde IV OS. Vuelve a abrir IAFI desde el portal o inicia sesión con Google.";
+    if(err) history.replaceState(null, "", location.pathname);
     state.view = "login"; render();
   }
 })();
